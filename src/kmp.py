@@ -2,18 +2,28 @@ from typing import List
 
 
 def kmp_search(source: List[str], target: List[str]) -> List[tuple]:
-    partial_match_tabel = []
-    print(target)
+    print(f'source:{source}, target:{target}')
+    partial_match_tabel = [-1]
     for i in range(len(target)):
         match_len = partial_match(target[:i+1])
         partial_match_tabel.append(match_len)
-    for i in range(len(source)):
+    print(partial_match_tabel)
+    
+    i = 0
+    while i < len(source) - len(target):
+        print(i)
         for j in range(len(target)):
+            print(f'\tj:{j} s:{source[i+j]} t:{target[0+j]}')
             if target[0+j] == source[i+j]:
                 if j == len(target) - 1:
-                    print(j)
+                    print('gotya', target)
+                    i += len(target)
             else:
                 i += j - partial_match_tabel[j]
+                break
+        
+
+
 
 
 def partial_match(sequence: List[str]) -> int:
@@ -33,8 +43,4 @@ def partial_match(sequence: List[str]) -> int:
 
 if __name__ == "__main__":
     keywords = []
-    with open('data/keywords.tsv', encoding='utf8') as f:
-        for keyword in f:
-            keywords.append(keyword.strip())
-    
-    kmp_search(None, '123123')
+    kmp_search('000124123123456789000', '123123')
