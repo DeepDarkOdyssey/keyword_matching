@@ -5,11 +5,44 @@ def bf_search(source: List[str], target: List[str]) -> List[tuple]:
     result = []
     for i in range(len(source) - len(target) + 1):
         for j in range(len(target)):
-            if target[0+j] == source[i+j]:
+            if target[0 + j] == source[i + j]:
                 if j == len(target) - 1:
-                    result.append((i, i+j))
+                    result.append((i, i + j))
             else:
                 break
+    return result
+
+
+def show_progress(source, s_pointer, target, t_pointer):
+    print(source)
+    print(' ' * s_pointer + '^')
+    print(' ' * (s_pointer - t_pointer) + target)
+    print(' ' * (s_pointer - t_pointer) + '*' * t_pointer + '^')
+
+
+def bf_search_new(source: List[str], target: List[str],
+                  verbose=False) -> List[tuple]:
+    result = []
+
+    s_pointer, t_pointer = 0, 0
+    if verbose:
+        show_progress(source, s_pointer, target, t_pointer)
+    while s_pointer < len(source):
+        if target[t_pointer] == source[s_pointer]:
+            s_pointer += 1
+            t_pointer += 1
+            if verbose:
+                show_progress(source, s_pointer, target, t_pointer)
+            if t_pointer >= len(target):
+                t_pointer = 0
+                result.append(s_pointer - len(target))
+                if verbose:
+                    show_progress(source, s_pointer, target, t_pointer)
+        else:
+            s_pointer += 1
+            t_pointer = 0
+            if verbose:
+                show_progress(source, s_pointer, target, t_pointer)
     return result
 
 
@@ -27,8 +60,6 @@ if __name__ == "__main__":
     for i, keyword in enumerate(keywords):
         result = bf_search(list(desc), list(keyword))
         print(f'\r{i}', end='')
-        if result:
-            print(f' {keyword}')
     tock = time.time()
     bf_run_time = tock - tick
     for i, keyword in enumerate(keywords):
