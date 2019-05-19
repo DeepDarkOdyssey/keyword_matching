@@ -1,10 +1,12 @@
 from trie_tree import TrieNode
 from typing import List, Tuple, Any
 
+
 class ACNode(TrieNode):
     def __init__(self, word, depth=0):
         super().__init__(word, depth=depth)
         self.fail = None
+
 
 class ACAutomation(object):
     def __init__(self, words_list: List[List[str]]):
@@ -39,13 +41,14 @@ class ACAutomation(object):
         t_pointer = self.root
         for s_pointer in range(len(source)):
             word = source[s_pointer]
-            while (t_pointer.fail is not None) and (word not in t_pointer.children):
+            while (t_pointer.fail is
+                   not None) and (word not in t_pointer.children):
                 t_pointer = t_pointer.fail
             if word in t_pointer.children:
                 t_pointer = t_pointer.children[word]
             if t_pointer.is_leaf:
-                result.append((s_pointer-t_pointer.depth + 1, s_pointer))
-                t_pointer = self.root
+                result.append((s_pointer - t_pointer.depth + 1, s_pointer))
+                # t_pointer = self.root
         return result
 
 

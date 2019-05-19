@@ -1,40 +1,46 @@
-from typing import List
+from typing import List, Tuple
+
 
 class KMP(object):
     def build_partial_match_table(self, target: List[str]):
         partial_match_table = [0]
         for i in range(1, len(target)):
-            j = partial_match_table[i-1]
-            while j>0 and target[j] != target[i]:
-                j = partial_match_table[j-1]
+            j = partial_match_table[i - 1]
+            while j > 0 and target[j] != target[i]:
+                j = partial_match_table[j - 1]
             if target[i] == target[j]:
-                partial_match_table.append(j+1)
+                partial_match_table.append(j + 1)
             else:
                 partial_match_table.append(0)
         return partial_match_table
-    
-    def search(self, source: List[str], target: List[str], verbose: bool=False) -> List[int]:
+
+    def search(self,
+               source: List[str],
+               target: List[str],
+               verbose: bool = False) -> List[Tuple[int]]:
         partial_match_table = self.build_partial_match_table(target)
         result = []
         t_pointer = 0
         for s_pointer in range(len(source)):
             if verbose:
-                show_progress(source, s_pointer, target, t_pointer)
+                show_progress(source, s_pointer, target, t_pointer,
+                              partial_match_table)
             while t_pointer > 0 and source[s_pointer] != target[t_pointer]:
                 t_pointer = partial_match_table[t_pointer - 1]
                 if verbose:
-                    show_progress(source, s_pointer, target, t_pointer)
+                    show_progress(source, s_pointer, target, t_pointer,
+                                  partial_match_table)
 
             if source[s_pointer] == target[t_pointer]:
                 t_pointer += 1
             if t_pointer == len(target):
-                result.append(s_pointer - t_pointer + 1)
+                result.append((s_pointer - t_pointer + 1, s_pointer))
                 # t_pointer = partial_match_table[t_pointer - 1]
                 t_pointer = 0
         return result
 
 
-def show_progress(source, s_pointer, target, t_pointer):
+def show_progress(source, s_pointer, target, t_pointer, partial_match_table):
     print(source)
     s_prefix = s_pointer - t_pointer
     print(' ' * s_pointer + '^')
@@ -46,16 +52,18 @@ def show_progress(source, s_pointer, target, t_pointer):
 def kmp_search(source: List[str],
                target: List[str],
                partial_match_table: List[int],
-               verbose: bool=False) -> List[int]:
+               verbose: bool = False) -> List[int]:
     result = []
     t_pointer = 0
     for s_pointer in range(len(source)):
         if verbose:
-            show_progress(source, s_pointer, target, t_pointer)
+            show_progress(source, s_pointer, target, t_pointer,
+                          partial_match_table)
         while t_pointer > 0 and source[s_pointer] != target[t_pointer]:
             t_pointer = partial_match_table[t_pointer - 1]
             if verbose:
-                show_progress(source, s_pointer, target, t_pointer)
+                show_progress(source, s_pointer, target, t_pointer,
+                              partial_match_table)
 
         if source[s_pointer] == target[t_pointer]:
             t_pointer += 1
