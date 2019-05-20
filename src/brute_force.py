@@ -1,7 +1,7 @@
-from typing import List
+from typing import List, Tuple
 
 
-def bf_search(source: List[str], target: List[str]) -> List[tuple]:
+def bf_search(source: List[str], target: List[str]) -> List[Tuple[int, int]]:
     result = []
     for i in range(len(source) - len(target) + 1):
         for j in range(len(target)):
@@ -21,7 +21,7 @@ def show_progress(source, s_pointer, target, t_pointer):
 
 
 def bf_search_new(source: List[str], target: List[str],
-                  verbose=False) -> List[tuple]:
+                  verbose=False) -> List[Tuple[int, int]]:
     result = []
 
     s_pointer, t_pointer = 0, 0
@@ -35,7 +35,7 @@ def bf_search_new(source: List[str], target: List[str],
                 show_progress(source, s_pointer, target, t_pointer)
             if t_pointer >= len(target):
                 t_pointer = 0
-                result.append(s_pointer - len(target))
+                result.append((s_pointer - len(target), s_pointer))
                 if verbose:
                     show_progress(source, s_pointer, target, t_pointer)
         else:
@@ -49,6 +49,7 @@ def bf_search_new(source: List[str], target: List[str],
 if __name__ == "__main__":
     import time
     import pandas as pd
+    from collections import defaultdict
     df = pd.read_csv('./data/dev.tsv', sep='\t', encoding='utf8')
     keywords = []
     with open('data/keywords.tsv', encoding='utf8') as f:
@@ -56,17 +57,15 @@ if __name__ == "__main__":
             keyword = keyword.strip()
             keywords.append(keyword)
     desc = df['描述'].values[0]
+    word2pos = defaultdict(list)
     tick = time.time()
     for i, keyword in enumerate(keywords):
-        result = bf_search(list(desc), list(keyword))
+        result = bf_search(desc, keyword)
+        if result:
+            word2pos[keyword].append(result)
         print(f'\r{i}', end='')
     tock = time.time()
     bf_run_time = tock - tick
-    for i, keyword in enumerate(keywords):
-        print(f'\r{i}', end='')
-        if keyword in desc:
-            print(f' {keyword}')
-    tick = time.time()
-    in_run_time = tick - tock
-    print()
-    print(bf_run_time, in_run_time)
+    print(bf_run_time)
+    for word in sorted(word2pos):
+        print(word, word2pos[word])

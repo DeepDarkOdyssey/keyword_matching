@@ -57,6 +57,7 @@ if __name__ == "__main__":
     # target = "sdmfhsgnshejfgnihaofhsrnihao"
     # ac_automation = ACAutomation(keywords)
 
+    from collections import defaultdict
     import time
     import pandas as pd
     df = pd.read_csv('./data/dev.tsv', sep='\t', encoding='utf8')
@@ -66,8 +67,7 @@ if __name__ == "__main__":
             keyword = keyword.strip()
             keywords.append(keyword)
     tick = time.time()
-    print('深' in keywords)
-    # ac_automation = ACAutomation(keywords)
+    ac_automation = ACAutomation(keywords)
     # tock = time.time()
     # print(tock - tick)
     # stack = []
@@ -90,9 +90,13 @@ if __name__ == "__main__":
     #         print(child.word, child.depth, child.fail.word)
 
     desc = df['描述'].values[0]
-    # result = ac_automation.search(desc)
-    # for start, end in result:
-    #     print(start, end, desc[start: end+1])
+    result = ac_automation.search(desc)
+    word2pos = defaultdict(list)
+    for start, end in result:
+        word2pos[desc[start: end+1]].append((start, end))
+    for word in sorted(word2pos):
+        print(word, word2pos[word])
+
     # tick = time.time()
     # ac_run_time = tick - tock
     # for i, keyword in enumerate(keywords):
